@@ -5,12 +5,14 @@
       "@/*": ["src/*"]
     },
     "target": "ES6",
-    "module": "commonjs",
+    "module": "NodeNext",
     "declaration": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "skipLibCheck": true,
+    "moduleResolution" : "NodeNext",
+    "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
@@ -18,5 +20,5 @@
     "strictNullChecks": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

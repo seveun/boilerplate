@@ -25,7 +25,7 @@ export async function initOnlineEnv() {
   if (initEnv) return;
   console.log(`Initializing online env ${process.env.NODE_ENV}`);
   const vault = await getVault([
-    { name: 'TEST_DATABASE_URL' },
+    { name: 'DATABASE_URL' },
   ]);
   const parseEnv = envSchema.parse({ ...process.env, ...vault });
   global.process.env = { ...global.process.env, ...parseEnv };
