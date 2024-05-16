@@ -1,10 +1,10 @@
-import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react'
-import { useUser } from '@/context/UserContext'
-import { useAuth } from '@/hooks/useAuth'
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const IndexPage = () => {
-  const { user } = useUser()
-  const { handleGoogleLogin, handleLogout } = useAuth()
+  const { user } = useUser();
+  const { handleGoogleLogin, handleLogout } = useAuth();
   return (
     <Box
       h="100vh"
@@ -42,7 +42,7 @@ const IndexPage = () => {
         )}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default IndexPage
+export default IndexPage;
