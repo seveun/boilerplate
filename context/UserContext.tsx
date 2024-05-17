@@ -27,7 +27,6 @@ interface UserContextProps {
   isModalOpen: boolean;
   openLoginModal: () => void;
   closeLoginModal: () => void;
-  refreshUser: () => void;
   isLoading: boolean;
 }
 
@@ -85,22 +84,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   }, []);
 
   const contextValue = useMemo(
-    () => ({
-      user,
-      isLoading,
-      openLoginModal,
-      closeLoginModal,
-      refreshUser,
-      isModalOpen,
-    }),
-    [
-      user,
-      isLoading,
-      isModalOpen,
-      openLoginModal,
-      closeLoginModal,
-      refreshUser,
-    ],
+    () => ({ user, isLoading, openLoginModal, closeLoginModal, isModalOpen }),
+    [user, isLoading, isModalOpen, openLoginModal, closeLoginModal],
   );
 
   return (
