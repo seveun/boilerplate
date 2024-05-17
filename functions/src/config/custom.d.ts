@@ -1,4 +1,6 @@
 import bluebird from 'bluebird';
+import 'fastify';
+import User from '@/schemas/User.schema';
 
 declare global {
     interface PromiseConstructor {
@@ -6,4 +8,10 @@ declare global {
       map: typeof bluebird.map;
       delay: typeof bluebird.delay;
     }
+}
+
+declare module 'fastify' {
+  interface FastifyRequest {
+    User?: User
+  }
 }

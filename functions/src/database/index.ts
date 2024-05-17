@@ -8,6 +8,9 @@ export const init = async () => {
   sequelize = await new Sequelize({
     dialect: PostgresDialect,
     url: process.env.DATABASE_URL,
+    define: {
+      underscored: true,
+    },
     models: [User],
   });
   await sequelize.sync({ force: true });

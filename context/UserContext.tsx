@@ -5,108 +5,113 @@ import {
   useState,
   useEffect,
   useMemo,
-} from 'react'
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth'
-import { auth } from '@/firebase'
-import * as UserService from '@/services/user.service'
+  useRef,
+} from "react";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { ref, onValue, off } from "firebase/database";
+import { auth, database } from "@/firebase";
+import { useQuery, useQueryClient } from "react-query";
+import * as UserService from "@/services/user.service";
 
 export type User = {
-  id: string
-  username: string
-  accessToken: string
-  email: string
-  image: string | null
-  firebase: FirebaseUser
-}
+  id: string;
+  username: string;
+  accessToken: string;
+  email: string;
+  image: string | null;
+  firebase: FirebaseUser;
+};
 
 interface UserContextProps {
-  user: User | null
-  isModalOpen: boolean
-  setUser: React.Dispatch<React.SetStateAction<User | null>>
-  openLoginModal: () => void
-  closeLoginModal: () => void
-  refreshUser: () => void
-  isLoading: boolean
+  user: User | null;
+  isModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
+  refreshUser: () => void;
+  isLoading: boolean;
 }
 
-const UserContext = createContext<UserContextProps | undefined>(undefined)
-let intervalIndex = 0
+const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  const openLoginModal = () => setIsModalOpen(true)
-  const closeLoginModal = () => setIsModalOpen(false)
+  const firebaseUserRef = useRef<FirebaseUser | null>(null);
 
-  const refreshUser = async (currentUser?: FirebaseUser) => {
-    setIsLoading(true)
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser({
-        ...JSON.parse(storedUser),
-        firebase: currentUser || user?.firebase,
-      })
+  const openLoginModal = () => setIsModalOpen(true);
+  const closeLoginModal = () => setIsModalOpen(false);
+
+  const refreshUser = async () => {
+    if (firebaseUserRef.current) {
+      await firebaseUserRef.current.getIdToken(true);
+      await queryClient.fetchQuery("user");
     }
-    let accessToken = await user?.firebase.getIdToken(true)
-    if (!accessToken) accessToken = await currentUser?.getIdToken(true)
-    if (accessToken) {
-      const refreshUser = await UserService.get(accessToken)
-      setUser({
-        ...(currentUser || user),
-        ...refreshUser,
-        firebase: currentUser || user?.firebase,
-      })
-    }
-    setIsLoading(false)
-  }
+  };
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user))
-      clearInterval(intervalIndex)
-      intervalIndex = setInterval(() => refreshUser(), 20000) as any
-    }
-    return () => clearInterval(intervalIndex)
-  }, [user])
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) refreshUser(currentUser)
-      else {
-        localStorage.removeItem('user')
-        setUser(null)
+  const { data: user, isLoading } = useQuery(
+    "user",
+    async () => {
+      if (firebaseUserRef.current) {
+        const accessToken = await firebaseUserRef.current.getIdToken(true);
+        return await UserService.get(accessToken);
       }
-      setIsLoading(false)
-    })
-    return () => unsubscribe()
-  }, [])
+      return null;
+    },
+    {
+      enabled: !!firebaseUserRef.current,
+      refetchOnWindowFocus: true,
+      refetchIntervalInBackground: true,
+    },
+  );
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      firebaseUserRef.current = currentUser;
+      if (currentUser) {
+        const userRef = ref(database, `users/${currentUser.uid}`);
+        onValue(userRef, () => {
+          refreshUser();
+        });
+        return () => off(userRef);
+      } else {
+        queryClient.setQueryData("user", null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const contextValue = useMemo(
     () => ({
       user,
       isLoading,
-      setUser,
+      openLoginModal,
+      closeLoginModal,
+      refreshUser,
+      isModalOpen,
+    }),
+    [
+      user,
+      isLoading,
       isModalOpen,
       openLoginModal,
       closeLoginModal,
       refreshUser,
-    }),
-    [user, isLoading, isModalOpen, openLoginModal, closeLoginModal, refreshUser]
-  )
+    ],
+  );
 
   return (
     <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
-  )
-}
+  );
+};
 
 export const useUser = () => {
-  const context = useContext(UserContext)
+  const context = useContext(UserContext);
   if (context === undefined) {
-    throw new Error('useUser must be used within a UserProvider')
+    throw new Error("useUser must be used within a UserProvider");
   }
-  return context
-}
+  return context;
+};

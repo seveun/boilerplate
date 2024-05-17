@@ -1,5 +1,5 @@
 // hoc/withTranslations.js
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export function withTranslations(namespace: string[]) {
   return async function getStaticProps(props: any) {
@@ -8,6 +8,6 @@ export function withTranslations(namespace: string[]) {
         ...props,
         ...(await serverSideTranslations(props?.locale, namespace)),
       },
-    }
-  }
+    };
+  };
 }

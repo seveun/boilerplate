@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAD1itoRsarN9CIdgQhwLQ6GW9JC_x2cm4",
@@ -11,8 +12,10 @@ const firebaseConfig = {
   storageBucket: "boilerplate-4e22b.appspot.com",
   messagingSenderId: "404168946142",
   appId: "1:404168946142:web:d4b38694550c5e1fcded4f",
+  databaseURL: "https://boilerplate-4e22b.europe-west1.firebasedatabase.app",
 };
 
 export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth();
-export const firestore = getFirestore();
+export const firestore = getFirestore(app);
+export const database = getDatabase(app);
