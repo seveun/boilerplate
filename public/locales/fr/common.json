@@ -1,1 +1,7 @@
-{}
+{
+    "title": "Boilerplate Déployé",
+    "description": "Fastify + Serverless + Sequelize + Next.js + Shadcn + Firebase.",
+    "connected": "Connecté avec {{email}}",
+    "disconnect": "Se déconnecter",
+    "connectGoogle": "Connectez-vous avec Google"
+}

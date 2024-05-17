@@ -1,19 +1,29 @@
 import { useUser } from "@/context/UserContext";
 import { useAuth } from "@/hooks/useAuth";
-import { Button } from "@/components/ui/button"; // Assure-toi que l'importation correspond à l'endroit où le composant Button est installé
+import { Button } from "@/components/ui/button";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 import { FcGoogle } from "react-icons/fc";
+import { useTranslation } from "next-i18next";
+import { useRouter } from "next/router";
+import { withTranslations } from "@/hoc/translation";
+
+export const getStaticProps = withTranslations(["common"]);
 
 const IndexPage = () => {
+  const { t } = useTranslation("common");
   const { user } = useUser();
   const { handleGoogleLogin, handleLogout } = useAuth();
+  const router = useRouter();
+
+  const changeLanguage = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const locale: string = e.target.value;
+    router.push(router.pathname, router.asPath, { locale });
+  };
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-800 text-gray-100">
-      <h1 className="text-4xl font-bold mb-4 tracking-wider">
-        Boilerplate Deployed
-      </h1>
+      <h1 className="text-4xl font-bold mb-4 tracking-wider">{t("title")}</h1>
       <p
         className={twMerge(
           clsx(
@@ -22,18 +32,20 @@ const IndexPage = () => {
           ),
         )}
       >
-        Fastify + Serverless + Sequelize + Next.js + Shadcn + Firebase.
+        {t("description")}
       </p>
       <div className="pb-5">
         {user ? (
           <div className="flex flex-col items-center">
-            <div className={"font-bold"}>Connected with {user.email}</div>
+            <div className={"font-bold"}>
+              {t("connected", { email: user.email })}
+            </div>
             <Button
               className="mt-4"
               variant="destructive"
               onClick={handleLogout}
             >
-              Se déconnecter
+              {t("disconnect")}
             </Button>
           </div>
         ) : (
@@ -45,10 +57,20 @@ const IndexPage = () => {
               onClick={handleGoogleLogin}
             >
               <FcGoogle className="mr-2 scale-125" />
-              Connect with Google
+              {t("connectGoogle")}
             </Button>
           </div>
         )}
+      </div>
+      <div className="absolute top-4 right-4">
+        <select
+          className="bg-gray-800 text-gray-100 p-2 rounded"
+          onChange={changeLanguage}
+          value={router.locale}
+        >
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+        </select>
       </div>
     </div>
   );
