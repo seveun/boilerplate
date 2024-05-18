@@ -1,12 +1,9 @@
 import 'module-alias/register';
 import { onRequest } from 'firebase-functions/v2/https';
 import fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import bluebird from 'bluebird';
 import router from '@/routes';
 import { initOnlineEnv } from '@/config/Env';
 import { init } from '@/database';
-
-global.Promise = bluebird as any;
 
 let initDb: Promise<void>;
 const initEnv = initOnlineEnv().then(() => {

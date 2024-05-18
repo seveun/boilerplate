@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
+import Promiseb from 'bluebird';
 import { envSchema } from '@/schemas/Env.schema';
 
 let initEnv = false;
@@ -9,7 +10,7 @@ const client = new SecretManagerServiceClient();
 
 async function getVault(secrets: { name: string; useEnv?: boolean }[]) {
   const vault = {} as Record<string, string>;
-  await Promise.map(secrets, async ({ name, useEnv }) => {
+  await Promiseb.map(secrets, async ({ name, useEnv }) => {
     const envSecretName = useEnv ? `${process.env.NODE_ENV}_${name}` : name;
     const [version] = await client.accessSecretVersion({
       name: `projects/${process.env.GCP_PROJECT_ID}/secrets/${envSecretName}/versions/latest`,
