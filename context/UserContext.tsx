@@ -12,15 +12,12 @@ import { ref, onValue, off } from "firebase/database";
 import { auth, database } from "@/firebase";
 import { useQuery, useQueryClient } from "react-query";
 import * as UserService from "@/services/user.service";
+import { User as UserType } from "@schemas/User.schema";
 
 export type User = {
-  id: string;
-  username: string;
   accessToken: string;
-  email: string;
-  image: string | null;
   firebase: FirebaseUser;
-};
+} & UserType;
 
 interface UserContextProps {
   user: User | null;
