@@ -1,0 +1,13 @@
+{
+  "imports": {
+    "@utils/": "./utils/",
+    "@shared/": "../../shared/",
+    "@queries/": "../../shared/supabase/queries/",
+    "@schema/": "../../shared/schema/",
+    "@api/": "./functions/api/",
+    "zod": "https://deno.land/x/zod/mod.ts",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.47.3",
+    "axios": "https://deno.land/x/axiod@0.26.2/mod.ts",
+    "map": "https://deno.land/x/map@0.0.1/mod.ts"
+  }
+}

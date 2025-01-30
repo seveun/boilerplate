@@ -1,0 +1,2 @@
+NavUser-agent: *
+Disallow: /

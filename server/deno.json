@@ -1,0 +1,14 @@
+{
+  "lint": {
+    "rules": {
+      "tags": ["recommended"],
+      "include": [
+        "ban-untagged-todo",
+        "no-explicit-any",
+        "no-unused-vars",
+        "no-empty-interface"
+      ]
+    }
+  },
+  "importMap": "./supabase/import_map.json"
+}
